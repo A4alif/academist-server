@@ -1,5 +1,5 @@
 const express = require("express");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const cookieParser = require('cookie-parser')
 
@@ -39,6 +39,13 @@ async function run() {
     app.get('/api/v1/all-assignments', async(req, res) => {
       const cursor = assignmentsCollection.find();
       const result = await cursor.toArray();
+      res.send(result);
+    })
+
+    app.get('/api/v1/all-assignments/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id)};
+      const result = await assignmentsCollection.findOne(query);
       res.send(result);
     })
 
