@@ -35,6 +35,13 @@ async function run() {
     const assignmentsCollection = database.collection('assignments');
 
     // assignment api
+
+    app.get('/api/v1/all-assignments', async(req, res) => {
+      const cursor = assignmentsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
     app.post('/api/v1/create-assignment', async(req, res) => {
       const assignment = req.body;
       console.log(assignment);
