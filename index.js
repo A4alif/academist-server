@@ -2,7 +2,7 @@ const express = require("express");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const cookieParser = require('cookie-parser')
-
+const jwt = require('jsonwebtoken');
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 5000;
@@ -47,8 +47,15 @@ async function run() {
       if(req.query?.difficultyLevel){
         query = {difficultyLevel: req.query.difficultyLevel}
       }
-      const cursor = assignmentsCollection.find(query);
+      // pagination
+      const page = Number(req.query.page);
+      const limit = Number(req.query.limit);
+      const skip = (page - 1) * limit;
+
+      const cursor = assignmentsCollection.find(query).skip(skip).limit(limit);
       const result = await cursor.toArray();
+      // count all data
+      const total = await assignmentsCollection.countDocuments();
       res.send(result);
     })
 
