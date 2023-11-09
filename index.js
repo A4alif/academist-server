@@ -37,7 +37,15 @@ async function run() {
     // assignment api
 
     app.get('/api/v1/all-assignments', async(req, res) => {
-      const cursor = assignmentsCollection.find();
+
+      let query = {}
+      if(req.query?.email){
+        query = {email: req.query.email}
+      }
+      if(req.query?.difficultyLevel){
+        query = {difficultyLevel: req.query.difficultyLevel}
+      }
+      const cursor = assignmentsCollection.find(query);
       const result = await cursor.toArray();
       res.send(result);
     })
@@ -51,7 +59,7 @@ async function run() {
 
     app.post('/api/v1/create-assignment', async(req, res) => {
       const assignment = req.body;
-      console.log(assignment);
+      
       const result = await assignmentsCollection.insertOne(assignment);
       res.send(result);
     })
@@ -82,8 +90,12 @@ async function run() {
       res.send(result);
     })
 
-
-
+    app.delete('/api/v1/all-assignments/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id)};
+      const result = await assignmentsCollection.deleteOne(query);
+      res.send(result);
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log(
