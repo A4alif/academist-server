@@ -33,6 +33,7 @@ async function run() {
     // database and collection
     const database = client.db('assignmentsDB');
     const assignmentsCollection = database.collection('assignments');
+    const submitAssignmentsCollection = database.collection('submitAssignments');
 
     // assignment api
 
@@ -94,6 +95,25 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id)};
       const result = await assignmentsCollection.deleteOne(query);
+      res.send(result);
+    })
+
+    // submit assignment api
+
+    app.get('/api/v1/submit-assignments', async(req, res) => {
+      let query = {}
+      if(req.query?.submitUserEmail){
+        query = {submitUserEmail: req.query.submitUserEmail}
+      }
+      
+      const cursor = submitAssignmentsCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+    app.post('/api/v1/submit-assignments', async(req, res) => {
+      const submitAssignment = req.body;
+      const result = await submitAssignmentsCollection.insertOne(submitAssignment);
       res.send(result);
     })
 
