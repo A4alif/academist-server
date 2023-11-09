@@ -55,6 +55,36 @@ async function run() {
       const result = await assignmentsCollection.insertOne(assignment);
       res.send(result);
     })
+
+    app.put('/api/v1/update-assignment/:id', async(req, res) => {
+      const id = req.params.id;
+      const updateAssignment = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedAss = {
+        $set: {
+          title: updateAssignment.title,
+          thumbnail: updateAssignment.thumbnail,
+          marks: updateAssignment.marks,
+          description: updateAssignment.description,
+          dueDate: updateAssignment.dueDate,
+          difficultyLevel: updateAssignment.difficultyLevel,
+          author:updateAssignment.author,
+          email:updateAssignment.email
+          
+        },
+      };
+      const result = await assignmentsCollection.updateOne(
+        filter,
+        updatedAss,
+        options
+      );
+      res.send(result);
+    })
+
+
+
+
     await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
